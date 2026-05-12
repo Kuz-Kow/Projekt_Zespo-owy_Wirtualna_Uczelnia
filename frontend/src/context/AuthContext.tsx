@@ -16,7 +16,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (loginInput: string, password: string) => Promise<boolean>;
   demoLogin: (role: UserRole) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
@@ -31,16 +31,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (loginInput: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const data = await apiService.login(email, password);
+      const data = await apiService.login(loginInput, password);
       setUser(data.user);
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('token', data.token);
       setIsLoading(false);
       return true;
-    } catch {
+    } catch (err) {
+      console.error('Blad logowania w AuthContext:', err);
       setIsLoading(false);
       return false;
     }

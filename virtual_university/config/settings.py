@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     
     'users',
@@ -26,9 +27,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS - musi być przed SessionMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -57,12 +57,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'virtual_university',  # Название БД
-        'USER': 'root',                # Пользователь MySQL
-        'PASSWORD': '',                # Пароль (обычно пусто в XAMPP)
-        'HOST': '127.0.0.1',          # Адрес MySQL сервера
-        'PORT': '3306',               # Порт MySQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -81,8 +77,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'pl-PL'  # Zmieniono na polski
+TIME_ZONE = 'Europe/Warsaw'  # Zmieniono na strefę czasową Polski
 USE_I18N = True
 USE_TZ = True
 
@@ -104,12 +100,17 @@ REST_FRAMEWORK = {
     ],
 }
 
-# CORS Configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000",
-]
-
+# CORS Configuration - rozszerzona konfiguracja dla wszystkich środowisk deweloperskich
+CORS_ALLOW_ALL_ORIGINS = True  # Zezwól na wszystkie źródła w trybie DEBUG
 CORS_ALLOW_CREDENTIALS = True
+
+# Dodatkowe ustawienia CORS dla bezpieczeństwa
+CORS_EXPOSE_HEADERS = ['Content-Type', 'Authorization']
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+
+# CSRF Configuration - wyłączone dla API (używamy Token auth)
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000', 'http://127.0.0.1:3000']
+
+# Token Authentication - ustawienia
+TOKEN_EXPIRY_AFTER_SECONDS = 60 * 60 * 24 * 7  # Token wygasa po 7 dniach

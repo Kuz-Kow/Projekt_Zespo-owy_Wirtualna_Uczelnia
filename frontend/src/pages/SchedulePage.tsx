@@ -31,7 +31,7 @@ export function SchedulePage() {
   const { user } = useAuth();
   const { colors } = useTheme();
 
-  const schedule = user?.role === 'teacher' ? mockSchedule.teacher : mockSchedule.student;
+  const schedule = user?.role === 'lecturer' ? mockSchedule.teacher : mockSchedule.student;
 
   return (
     <div className={styles.container}>
@@ -62,7 +62,7 @@ export function SchedulePage() {
                   <div className={styles.lessonContent}>
                     <h3 style={{ color: colors.text }}>{lesson.name}</h3>
                     <p style={{ color: colors.subtext1 }}>
-                      {user?.role === 'teacher' 
+                      {user?.role === 'lecturer' 
                         ? `Grupy: ${('groups' in lesson && lesson.groups) ? lesson.groups.join(', ') : ''}`
                         : `Prowadzący: ${lesson.teacher}`
                       }

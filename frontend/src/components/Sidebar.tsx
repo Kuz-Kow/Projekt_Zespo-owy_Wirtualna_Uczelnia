@@ -56,7 +56,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <span style={{ color: colors.text }}>{user?.firstName} {user?.lastName}</span>
             <span style={{ color: colors.subtext1 }}>
               {user?.role === 'student' && 'Student'}
-              {user?.role === 'teacher' && (user?.academicTitle || 'Wykładowca')}
+              {user?.role === 'lecturer' && (user?.academicTitle || 'Wykładowca')}
               {user?.role === 'admin' && 'Administrator'}
             </span>
           </div>

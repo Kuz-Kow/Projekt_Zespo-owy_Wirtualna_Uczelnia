@@ -1,35 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, type UserRole } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import styles from './LoginPage.module.css';
 
 export function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [loginInput, setLoginInput] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login, demoLogin } = useAuth();
+  const { login } = useAuth();
   const { colors, toggleTheme, theme } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const success = await login(email, password);
-    if (success) {
+    
+    try {
+      await login(loginInput, password);
       navigate('/dashboard');
-    } else {
-      setError('Nieprawidłowy email lub hasło');
-    }
-  };
-
-  const handleDemoLogin = async (role: UserRole) => {
-    setError('');
-    const success = await demoLogin(role);
-    if (success) {
-      navigate('/dashboard');
-    } else {
-      setError('Błąd połączenia z serwerem');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Blad logowania';
+      console.error('Blad logowania:', errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -54,11 +48,11 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
-            <label style={{ color: colors.subtext1 }}>Email</label>
+            <label style={{ color: colors.subtext1 }}>Login lub email</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={loginInput}
+              onChange={(e) => setLoginInput(e.target.value)}
               placeholder="jan.kowalski@uczelnia.pl"
               style={{ 
                 backgroundColor: colors.surface0, 
@@ -71,18 +65,28 @@ export function LoginPage() {
 
           <div className={styles.inputGroup}>
             <label style={{ color: colors.subtext1 }}>Hasło</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{ 
-                backgroundColor: colors.surface0, 
-                color: colors.text,
-                borderColor: colors.surface2
-              }}
-              required
-            />
+            <div className={styles.passwordWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ 
+                  backgroundColor: colors.surface0, 
+                  color: colors.text,
+                  borderColor: colors.surface2
+                }}
+                required
+              />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ color: colors.subtext1 }}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
           </div>
 
           {error && <p className={styles.error} style={{ color: colors.red }}>{error}</p>}
@@ -95,37 +99,6 @@ export function LoginPage() {
             Zaloguj się
           </button>
         </form>
-
-        <div className={styles.divider}>
-          <span style={{ color: colors.subtext0 }}>lub</span>
-        </div>
-
-        <div className={styles.demoSection}>
-          <p style={{ color: colors.subtext1 }}>Demo:</p>
-          <div className={styles.demoButtons}>
-            <button 
-              className={styles.demoBtn}
-              style={{ backgroundColor: colors.surface0, color: colors.text }}
-              onClick={() => handleDemoLogin('student')}
-            >
-              Student
-            </button>
-            <button 
-              className={styles.demoBtn}
-              style={{ backgroundColor: colors.surface0, color: colors.text }}
-              onClick={() => handleDemoLogin('lecturer')}
-            >
-              Wykładowca
-            </button>
-            <button 
-              className={styles.demoBtn}
-              style={{ backgroundColor: colors.surface0, color: colors.text }}
-              onClick={() => handleDemoLogin('admin')}
-            >
-              Administrator
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

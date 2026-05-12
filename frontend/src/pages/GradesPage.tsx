@@ -28,7 +28,7 @@ const mockStudentGrades = [
 export function GradesPage() {
   const { user } = useAuth();
   const { colors } = useTheme();
-  const isTeacher = user?.role === 'teacher';
+  const isTeacher = user?.role === 'lecturer';
   const [editingGrade, setEditingGrade] = useState<Grade | null>(null);
 
   return (

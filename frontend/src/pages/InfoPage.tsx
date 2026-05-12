@@ -19,7 +19,7 @@ export function InfoPage() {
         </h2>
         <p className={styles.role} style={{ color: colors.subtext1 }}>
           {user?.role === 'student' && 'Student'}
-          {user?.role === 'teacher' && (user?.academicTitle || 'Wykładowca')}
+          {user?.role === 'lecturer' && (user?.academicTitle || 'Wykładowca')}
           {user?.role === 'admin' && 'Administrator'}
         </p>
       </div>
@@ -41,7 +41,7 @@ export function InfoPage() {
           <span className={styles.label} style={{ color: colors.subtext1 }}>Typ konta</span>
           <span className={styles.value} style={{ color: colors.text }}>
             {user?.role === 'student' && 'Konto studenta'}
-            {user?.role === 'teacher' && 'Konto wykładowcy'}
+            {user?.role === 'lecturer' && 'Konto wykładowcy'}
             {user?.role === 'admin' && 'Konto administratora'}
           </span>
         </div>

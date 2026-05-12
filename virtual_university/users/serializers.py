@@ -11,21 +11,27 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.CharField(required=False)
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        email = attrs.get('email')
+        identifier = attrs.get('email')
         password = attrs.get('password')
 
+        if not identifier:
+            raise serializers.ValidationError("Email lub username jest wymagany")
+
         try:
-            user = User.objects.get(email=email)
+            if '@' in identifier:
+                user = User.objects.get(email=identifier)
+            else:
+                user = User.objects.get(username=identifier)
             user = authenticate(username=user.username, password=password)
             
             if user is None:
-                raise serializers.ValidationError("Invalid credentials")
+                raise serializers.ValidationError("Nieprawidłowe dane logowania")
         except User.DoesNotExist:
-            raise serializers.ValidationError("User not found")
+            raise serializers.ValidationError("Użytkownik nie znaleziony")
 
         attrs['user'] = user
         return attrs

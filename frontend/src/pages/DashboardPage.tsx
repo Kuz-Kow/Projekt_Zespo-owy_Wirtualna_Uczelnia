@@ -7,6 +7,7 @@ export function DashboardPage() {
   const { user } = useAuth();
   const { colors } = useTheme();
 
+  // Różne linki dla różnych ról
   const quickLinks = [
     { path: '/dashboard/schedule', label: 'Plan zajęć', icon: '📅', color: colors.blue },
     { path: '/dashboard/studies', label: 'Studia', icon: '📚', color: colors.green },
@@ -14,17 +15,30 @@ export function DashboardPage() {
     { path: '/dashboard/info', label: 'Informacje', icon: '👤', color: colors.mauve },
   ];
 
+  // Dodatkowe linki dla administratora
+  const adminLinks = [
+    { path: '/dashboard/users', label: 'Użytkownicy', icon: '👥', color: colors.sky },
+    { path: '/dashboard/subjects', label: 'Przedmioty', icon: '📖', color: colors.teal },
+  ];
+
   return (
     <div className={styles.container}>
       <div className={styles.welcome} style={{ backgroundColor: colors.mantle }}>
         <div className={styles.welcomeText}>
           <h1 style={{ color: colors.text }}>
-            Witaj, {user?.firstName}!
+            Witaj, {user?.firstName} {user?.lastName}!
           </h1>
           <p style={{ color: colors.subtext1 }}>
             {user?.role === 'student' && 'Miło Cię widzieć. Sprawdź swoje zajęcia i oceny.'}
-            {user?.role === 'teacher' && 'Miło Cię widzieć. Zarządzaj swoimi zajęciami i ocenami studentów.'}
+            {user?.role === 'lecturer' && 'Miło Cię widzieć. Zarządzaj swoimi zajęciami i ocenami studentów.'}
             {user?.role === 'admin' && 'Miło Cię widzieć. Zarządzaj platformą uczelni.'}
+          </p>
+          <p style={{ color: colors.subtext0, fontSize: '0.9em', marginTop: '5px' }}>
+            Rola: {
+              user?.role === 'student' ? 'Student' :
+              user?.role === 'lecturer' ? 'Wykładowca' :
+              user?.role === 'admin' ? 'Administrator' : 'Nieznana'
+            }
           </p>
         </div>
         <div className={styles.welcomeIcon} style={{ backgroundColor: colors.blue }}>
@@ -34,6 +48,20 @@ export function DashboardPage() {
 
       <div className={styles.quickLinks}>
         {quickLinks.map(link => (
+          <Link 
+            key={link.path} 
+            to={link.path}
+            className={styles.quickLink}
+            style={{ backgroundColor: colors.mantle }}
+          >
+            <div className={styles.quickLinkIcon} style={{ backgroundColor: link.color }}>
+              {link.icon}
+            </div>
+            <span style={{ color: colors.text }}>{link.label}</span>
+          </Link>
+        ))}
+        {/* Linki dla administratora */}
+        {user?.role === 'admin' && adminLinks.map(link => (
           <Link 
             key={link.path} 
             to={link.path}

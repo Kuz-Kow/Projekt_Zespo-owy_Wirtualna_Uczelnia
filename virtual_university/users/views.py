@@ -3,7 +3,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User
 from .serializers import UserSerializer, LoginSerializer, DemoLoginSerializer
@@ -11,16 +12,21 @@ from .serializers import UserSerializer, LoginSerializer, DemoLoginSerializer
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@csrf_exempt
 def login_view(request):
-    """User login endpoint"""
+    """
+    Endpoint logowania uzytkownika.
+    Oczekuje: { email: string, password: string }
+    Zwraca: { token: string, user: {...} }
+    """
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.validated_data['user']
-        login(request, user)
         
-        # Create or get token
+        # Tworzenie lub pobieranie tokena
         token, created = Token.objects.get_or_create(user=user)
         
+        # Zwrocenie danych uzytkownika w formacie zgodnym z frontendem
         user_data = UserSerializer(user).data
         return Response({
             'token': token.key,
@@ -40,13 +46,18 @@ def login_view(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@csrf_exempt
 def demo_login_view(request):
-    """Demo login for testing"""
+    """
+    Demo logowanie dla testowania różnych ról.
+    Oczekuje: { role: 'student' | 'lecturer' | 'admin' }
+    Zwraca: { token: string, user: {...} }
+    """
     serializer = DemoLoginSerializer(data=request.data)
     if serializer.is_valid():
         role = serializer.validated_data['role']
         
-        # Create or get demo user based on role
+        # Słownik danych dla demo użytkowników
         demo_users = {
             'student': {
                 'username': 'student_demo',
@@ -62,7 +73,7 @@ def demo_login_view(request):
                 'first_name': 'Maria',
                 'last_name': 'Kowalski',
                 'role': 'lecturer',
-                'academic_title': 'Dr.',
+                'academic_title': 'Dr',
             },
             'admin': {
                 'username': 'admin_demo',
@@ -74,6 +85,8 @@ def demo_login_view(request):
         }
         
         user_data = demo_users[role]
+        
+        # Pobranie lub utworzenie użytkownika demo
         user, created = User.objects.get_or_create(
             username=user_data['username'],
             defaults={
@@ -86,12 +99,12 @@ def demo_login_view(request):
             }
         )
         
-        # Set a default password if new user
+        # Ustawienie domyślnego hasła dla nowego użytkownika
         if created:
             user.set_password('demo123')
             user.save()
         
-        # Create or get token
+        # Tworzenie lub pobieranie tokena
         token, _ = Token.objects.get_or_create(user=user)
         
         return Response({
@@ -113,7 +126,10 @@ def demo_login_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_profile_view(request):
-    """Get current user profile"""
+    """
+    Pobranie profilu aktualnie zalogowanego użytkownika.
+    Wymaga tokena autoryzacji.
+    """
     user = request.user
     return Response({
         'id': user.id,
@@ -129,9 +145,17 @@ def user_profile_view(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    """User logout endpoint"""
+    """
+    Wylogowanie użytkownika - usunięcie tokena.
+    """
     try:
+        # Usunięcie tokena użytkownika
         request.user.auth_token.delete()
-    except:
+    except Token.DoesNotExist:
+        # Token nie istnieje - ignoruj
         pass
+    except Exception:
+        # Inny błąd - ignoruj
+        pass
+    
     return Response({'message': 'Successfully logged out'}, status=status.HTTP_200_OK)
