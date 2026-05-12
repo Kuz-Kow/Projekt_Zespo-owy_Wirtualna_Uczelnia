@@ -1,0 +1,98 @@
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import styles from './Sidebar.module.css';
+
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const menuItems = [
+  { path: '/dashboard', label: 'Strona główna', icon: '🏠' },
+  { path: '/dashboard/info', label: 'Informacje osobiste', icon: '👤' },
+  { path: '/dashboard/studies', label: 'Studia', icon: '📚' },
+  { path: '/dashboard/schedule', label: 'Plan zajęć', icon: '📅' },
+  { path: '/dashboard/grades', label: 'Oceny', icon: '📝' },
+];
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const { user, logout } = useAuth();
+  const { colors } = useTheme();
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/';
+  };
+
+  return (
+    <>
+      <div 
+        className={`${styles.overlay} ${isOpen ? styles.overlayVisible : ''}`}
+        onClick={onClose}
+        style={{ backgroundColor: colors.crust }}
+      />
+      <aside 
+        className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}
+        style={{ backgroundColor: colors.mantle }}
+      >
+        <div className={styles.header}>
+          <div className={styles.logo}>
+            <div className={styles.logoIcon} style={{ backgroundColor: colors.blue }}>
+              <span style={{ color: colors.crust }}>W</span>
+            </div>
+            <span style={{ color: colors.text }}>Wirtualna Uczelnia</span>
+          </div>
+          <button className={styles.closeBtn} onClick={onClose} style={{ color: colors.text }}>
+            ✕
+          </button>
+        </div>
+
+        <div className={styles.userInfo}>
+          <div className={styles.avatar} style={{ backgroundColor: colors.blue }}>
+            {user?.firstName[0]}{user?.lastName[0]}
+          </div>
+          <div className={styles.userDetails}>
+            <span style={{ color: colors.text }}>{user?.firstName} {user?.lastName}</span>
+            <span style={{ color: colors.subtext1 }}>
+              {user?.role === 'student' && 'Student'}
+              {user?.role === 'teacher' && (user?.academicTitle || 'Wykładowca')}
+              {user?.role === 'admin' && 'Administrator'}
+            </span>
+          </div>
+        </div>
+
+        <nav className={styles.nav}>
+          {menuItems.map(item => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => 
+                `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
+              }
+              style={({ isActive }) => ({
+                backgroundColor: isActive ? colors.surface0 : 'transparent',
+                color: isActive ? colors.blue : colors.text,
+              })}
+              onClick={onClose}
+            >
+              <span className={styles.navIcon}>{item.icon}</span>
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className={styles.footer}>
+          <button 
+            className={styles.logoutBtn}
+            onClick={handleLogout}
+            style={{ color: colors.red }}
+          >
+            <span>🚪</span>
+            <span>Wyloguj się</span>
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}

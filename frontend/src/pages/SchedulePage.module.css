@@ -1,0 +1,92 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+}
+
+.weekNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: var(--mantle);
+}
+
+.weekBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.weekBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.weekLabel {
+  font-weight: 500;
+}
+
+.schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dayCard {
+  padding: 1.25rem;
+  border-radius: 1rem;
+}
+
+.dayTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.lessons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lesson {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-left: 3px solid;
+}
+
+.lessonTime {
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 100px;
+}
+
+.lessonContent h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lessonContent p {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+.room {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
