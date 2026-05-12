@@ -8,8 +8,7 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, demoLogin } = useAuth();
   const { colors, toggleTheme, theme } = useTheme();
   const navigate = useNavigate();
 
@@ -25,24 +24,13 @@ export function LoginPage() {
   };
 
   const handleDemoLogin = async (role: UserRole) => {
-    setIsLoading(true);
     setError('');
-    try {
-      const response = await fetch('/api/auth/demo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('token', data.token);
-        navigate('/dashboard');
-      }
-    } catch {
+    const success = await demoLogin(role);
+    if (success) {
+      navigate('/dashboard');
+    } else {
       setError('Błąd połączenia z serwerem');
     }
-    setIsLoading(false);
   };
 
   return (
@@ -103,9 +91,8 @@ export function LoginPage() {
             type="submit" 
             className={styles.loginBtn}
             style={{ backgroundColor: colors.blue }}
-            disabled={isLoading}
           >
-            {isLoading ? 'Logowanie...' : 'Zaloguj się'}
+            Zaloguj się
           </button>
         </form>
 
@@ -126,7 +113,7 @@ export function LoginPage() {
             <button 
               className={styles.demoBtn}
               style={{ backgroundColor: colors.surface0, color: colors.text }}
-              onClick={() => handleDemoLogin('teacher')}
+              onClick={() => handleDemoLogin('lecturer')}
             >
               Wykładowca
             </button>

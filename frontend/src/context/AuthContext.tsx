@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { apiService } from '../services/apiService';
 
-export type UserRole = 'student' | 'teacher' | 'admin';
+export type UserRole = 'student' | 'lecturer' | 'admin';
 
 export interface User {
   id: number;
@@ -16,6 +17,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  demoLogin: (role: UserRole) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -32,36 +34,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('token', data.token);
-        setIsLoading(false);
-        return true;
-      }
+      const data = await apiService.login(email, password);
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
       setIsLoading(false);
-      return false;
+      return true;
     } catch {
       setIsLoading(false);
       return false;
     }
   };
 
-  const logout = () => {
+  const demoLogin = async (role: UserRole): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      const data = await apiService.demoLogin(role);
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
+      setIsLoading(false);
+      return true;
+    } catch {
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await apiService.logout();
+    } catch {
+      // Ignore logout errors
+    }
     setUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, demoLogin, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
