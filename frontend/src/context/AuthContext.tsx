@@ -43,7 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('Blad logowania w AuthContext:', err);
       setIsLoading(false);
-      return false;
+      const errorMessage = err instanceof Error ? err.message : 'Blad logowania';
+      throw new Error(errorMessage);
     }
   };
 

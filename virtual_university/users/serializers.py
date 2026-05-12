@@ -19,19 +19,25 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if not identifier:
-            raise serializers.ValidationError("Email lub username jest wymagany")
+            raise serializers.ValidationError("Email lub nazwa użytkownika jest wymagana")
+
+        if not password:
+            raise serializers.ValidationError("Hasło jest wymagane")
 
         try:
             if '@' in identifier:
                 user = User.objects.get(email=identifier)
             else:
                 user = User.objects.get(username=identifier)
-            user = authenticate(username=user.username, password=password)
-            
-            if user is None:
-                raise serializers.ValidationError("Nieprawidłowe dane logowania")
         except User.DoesNotExist:
-            raise serializers.ValidationError("Użytkownik nie znaleziony")
+            raise serializers.ValidationError("Nieprawidłowy email lub nazwa użytkownika")
+
+        user = authenticate(username=user.username, password=password)
+        if user is None:
+            raise serializers.ValidationError("Nieprawidłowe hasło")
+
+        if not user.is_active:
+            raise serializers.ValidationError("Konto jest nieaktywne")
 
         attrs['user'] = user
         return attrs

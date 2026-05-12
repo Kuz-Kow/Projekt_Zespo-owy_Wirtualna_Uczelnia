@@ -1,10 +1,8 @@
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
-from django.views.decorators.csrf import csrf_exempt
 
 from .models import User
 from .serializers import UserSerializer, LoginSerializer, DemoLoginSerializer
@@ -12,22 +10,11 @@ from .serializers import UserSerializer, LoginSerializer, DemoLoginSerializer
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def login_view(request):
-    """
-    Endpoint logowania uzytkownika.
-    Oczekuje: { email: string, password: string }
-    Zwraca: { token: string, user: {...} }
-    """
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.validated_data['user']
-        
-        # Tworzenie lub pobieranie tokena
         token, created = Token.objects.get_or_create(user=user)
-        
-        # Zwrocenie danych uzytkownika w formacie zgodnym z frontendem
-        user_data = UserSerializer(user).data
         return Response({
             'token': token.key,
             'user': {
@@ -40,24 +27,26 @@ def login_view(request):
                 'academicTitle': user.academic_title,
             }
         }, status=status.HTTP_200_OK)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    errors = serializer.errors
+    if 'non_field_errors' in errors:
+        error_msg = errors['non_field_errors'][0]
+    elif 'email' in errors:
+        error_msg = errors['email'][0]
+    elif 'password' in errors:
+        error_msg = errors['password'][0]
+    else:
+        error_msg = 'Nieprawidłowe dane logowania'
+    return Response({'detail': error_msg}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def demo_login_view(request):
-    """
-    Demo logowanie dla testowania różnych ról.
-    Oczekuje: { role: 'student' | 'lecturer' | 'admin' }
-    Zwraca: { token: string, user: {...} }
-    """
     serializer = DemoLoginSerializer(data=request.data)
     if serializer.is_valid():
         role = serializer.validated_data['role']
-        
-        # Słownik danych dla demo użytkowników
+
         demo_users = {
             'student': {
                 'username': 'student_demo',
@@ -83,10 +72,9 @@ def demo_login_view(request):
                 'role': 'admin',
             },
         }
-        
+
         user_data = demo_users[role]
-        
-        # Pobranie lub utworzenie użytkownika demo
+
         user, created = User.objects.get_or_create(
             username=user_data['username'],
             defaults={
@@ -98,15 +86,13 @@ def demo_login_view(request):
                 'academic_title': user_data.get('academic_title', ''),
             }
         )
-        
-        # Ustawienie domyślnego hasła dla nowego użytkownika
+
         if created:
             user.set_password('demo123')
             user.save()
-        
-        # Tworzenie lub pobieranie tokena
+
         token, _ = Token.objects.get_or_create(user=user)
-        
+
         return Response({
             'token': token.key,
             'user': {
@@ -119,8 +105,15 @@ def demo_login_view(request):
                 'academicTitle': user.academic_title,
             }
         }, status=status.HTTP_200_OK)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    errors = serializer.errors
+    if 'non_field_errors' in errors:
+        error_msg = errors['non_field_errors'][0]
+    elif 'role' in errors:
+        error_msg = errors['role'][0]
+    else:
+        error_msg = 'Nieprawidłowe dane logowania demo'
+    return Response({'detail': error_msg}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

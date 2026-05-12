@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, type UserRole } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import styles from './LoginPage.module.css';
 
@@ -9,7 +9,8 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
+  const { login, demoLogin } = useAuth();
   const { colors, toggleTheme, theme } = useTheme();
   const navigate = useNavigate();
 
@@ -21,9 +22,22 @@ export function LoginPage() {
       await login(loginInput, password);
       navigate('/dashboard');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Blad logowania';
-      console.error('Blad logowania:', errorMessage);
+      const errorMessage = err instanceof Error ? err.message : 'Błąd logowania';
+      console.error('Błąd logowania:', errorMessage);
       setError(errorMessage);
+    }
+  };
+
+  const handleDemoLogin = async (role: UserRole) => {
+    setError('');
+    setDemoLoading(role);
+    try {
+      await demoLogin(role);
+      navigate('/dashboard');
+    } catch {
+      setError('Błąd logowania demo');
+    } finally {
+      setDemoLoading(null);
     }
   };
 
@@ -99,6 +113,43 @@ export function LoginPage() {
             Zaloguj się
           </button>
         </form>
+
+        <div className={styles.divider} style={{ color: colors.subtext0 }}>
+          <span>lub</span>
+        </div>
+
+        <div className={styles.demoSection}>
+          <p style={{ color: colors.subtext1 }}>Zaloguj się jako:</p>
+          <div className={styles.demoButtons}>
+            <button
+              type="button"
+              className={styles.demoBtn}
+              style={{ backgroundColor: colors.green, color: colors.base }}
+              onClick={() => handleDemoLogin('student')}
+              disabled={demoLoading === 'student'}
+            >
+              {demoLoading === 'student' ? '...' : 'Student'}
+            </button>
+            <button
+              type="button"
+              className={styles.demoBtn}
+              style={{ backgroundColor: colors.yellow, color: colors.base }}
+              onClick={() => handleDemoLogin('lecturer')}
+              disabled={demoLoading === 'lecturer'}
+            >
+              {demoLoading === 'lecturer' ? '...' : 'Wykładowca'}
+            </button>
+            <button
+              type="button"
+              className={styles.demoBtn}
+              style={{ backgroundColor: colors.red, color: colors.base }}
+              onClick={() => handleDemoLogin('admin')}
+              disabled={demoLoading === 'admin'}
+            >
+              {demoLoading === 'admin' ? '...' : 'Admin'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

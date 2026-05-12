@@ -162,6 +162,8 @@
   content: '';
   flex: 1;
   height: 1px;
+  background-color: currentColor;
+  opacity: 0.3;
 }
 
 .demoSection {
