@@ -1,0 +1,156 @@
+.container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.6em;
+}
+
+.addBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  transition: opacity 0.2s;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}
+
+.table {
+  border: 1px solid;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  gap: 12px;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.tableRow {
+  display: grid;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .deleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.editBtn:hover, .deleteBtn:hover {
+  opacity: 0.8;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  padding: 28px;
+  border-radius: 12px;
+  min-width: 400px;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modalContent h2 {
+  margin: 0 0 20px 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.field input, .field select {
+  padding: 10px 12px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 0.95em;
+  outline: none;
+}
+
+.field input:focus, .field select:focus {
+  border-color: #1E66F5;
+}
+
+.checkboxList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.cancelBtn, .saveBtn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.saveBtn:hover, .cancelBtn:hover {
+  opacity: 0.9;
+}

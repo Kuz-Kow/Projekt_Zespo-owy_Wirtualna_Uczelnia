@@ -18,154 +18,100 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
+async function apiFetch(url: string, options: RequestInit = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+      ...(options.headers || {}),
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || error.message || `HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
 export const apiService = {
   // Logowanie uzytkownika
   async login(loginInput: string, password: string) {
-    console.log('Proba logowania:', loginInput);
-    
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: loginInput, password }),
     });
-    
-    console.log('Odpowiedz status:', response.status);
-    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Blad logowania:', errorData);
       throw new Error(errorData.detail || errorData.message || 'Login failed');
     }
-    
-    const data = await response.json();
-    console.log('Logowanie udane:', data);
-    return data;
+    return response.json();
   },
 
-  // Demo logowanie dla różnych ról
   async demoLogin(role: 'student' | 'lecturer' | 'admin') {
     const response = await fetch(`${API_BASE_URL}/auth/demo`, {
       method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role }),
     });
-    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.detail || errorData.message || 'Demo login failed');
     }
-    
     return response.json();
   },
 
-  // Wylogowanie użytkownika
   async logout() {
     const token = getToken();
-    if (!token) {
-      return true; // Brak tokena - nic do roboty
-    }
-    
+    if (!token) return true;
     const response = await fetch(`${API_BASE_URL}/auth/logout`, {
       method: 'POST',
       headers: getAuthHeaders(),
     });
-    
     return response.ok;
   },
 
-  // Pobranie profilu użytkownika
   async getProfile() {
-    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch profile');
-    }
-    
-    return response.json();
+    return apiFetch(`${API_BASE_URL}/auth/profile`);
   },
 
-  // Pobranie kierunków studiów
-  async getFields() {
-    const response = await fetch(`${API_BASE_URL}/fields`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch fields');
-    }
-    
-    return response.json();
-  },
+  // Fields
+  async getFields() { return apiFetch(`${API_BASE_URL}/fields`); },
+  async createField(data: any) { return apiFetch(`${API_BASE_URL}/fields/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async updateField(id: number, data: any) { return apiFetch(`${API_BASE_URL}/fields/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
+  async deleteField(id: number) { return apiFetch(`${API_BASE_URL}/fields/${id}/`, { method: 'DELETE' }); },
 
-  // Pobranie przedmiotów
-  async getSubjects() {
-    const response = await fetch(`${API_BASE_URL}/subjects`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch subjects');
-    }
-    
-    return response.json();
-  },
+  // Subjects
+  async getSubjects() { return apiFetch(`${API_BASE_URL}/subjects`); },
+  async createSubject(data: any) { return apiFetch(`${API_BASE_URL}/subjects/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async updateSubject(id: number, data: any) { return apiFetch(`${API_BASE_URL}/subjects/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
+  async deleteSubject(id: number) { return apiFetch(`${API_BASE_URL}/subjects/${id}/`, { method: 'DELETE' }); },
 
-  // Pobranie harmonogramu zajęć
-  async getSchedule() {
-    const response = await fetch(`${API_BASE_URL}/schedules`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch schedule');
-    }
-    
-    return response.json();
-  },
+  // Students
+  async getStudents() { return apiFetch(`${API_BASE_URL}/students`); },
+  async createStudent(data: any) { return apiFetch(`${API_BASE_URL}/students/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async updateStudent(id: number, data: any) { return apiFetch(`${API_BASE_URL}/students/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
+  async deleteStudent(id: number) { return apiFetch(`${API_BASE_URL}/students/${id}/`, { method: 'DELETE' }); },
 
-  // Pobranie ocen
-  async getGrades() {
-    const response = await fetch(`${API_BASE_URL}/grades`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch grades');
-    }
-    
-    return response.json();
-  },
+  // Lecturers
+  async getLecturers() { return apiFetch(`${API_BASE_URL}/lecturers`); },
+  async createLecturer(data: any) { return apiFetch(`${API_BASE_URL}/lecturers/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async updateLecturer(id: number, data: any) { return apiFetch(`${API_BASE_URL}/lecturers/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
+  async deleteLecturer(id: number) { return apiFetch(`${API_BASE_URL}/lecturers/${id}/`, { method: 'DELETE' }); },
 
-  // Pobranie studentów (dla wykładowców i adminów)
-  async getStudents() {
-    const response = await fetch(`${API_BASE_URL}/students`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch students');
-    }
-    
-    return response.json();
-  },
+  // Schedule
+  async getSchedule() { return apiFetch(`${API_BASE_URL}/schedules`); },
+  async createSchedule(data: any) { return apiFetch(`${API_BASE_URL}/schedules/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async updateSchedule(id: number, data: any) { return apiFetch(`${API_BASE_URL}/schedules/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
+  async deleteSchedule(id: number) { return apiFetch(`${API_BASE_URL}/schedules/${id}/`, { method: 'DELETE' }); },
 
-  // Pobranie wykładowców (dla adminów)
-  async getLecturers() {
-    const response = await fetch(`${API_BASE_URL}/lecturers`, {
-      headers: getAuthHeaders(),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch lecturers');
-    }
-    
-    return response.json();
-  },
+  // Grades
+  async getGrades() { return apiFetch(`${API_BASE_URL}/grades`); },
+
+  // Users (admin only)
+  async getUsers() { return apiFetch(`${API_BASE_URL}/auth/users/`); },
+  async createUser(data: any) { return apiFetch(`${API_BASE_URL}/auth/users/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async updateUser(id: number, data: any) { return apiFetch(`${API_BASE_URL}/auth/users/${id}/`, { method: 'PATCH', body: JSON.stringify(data) }); },
+  async deleteUser(id: number) { return apiFetch(`${API_BASE_URL}/auth/users/${id}/`, { method: 'DELETE' }); },
 };

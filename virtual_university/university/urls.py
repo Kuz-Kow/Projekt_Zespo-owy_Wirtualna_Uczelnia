@@ -11,11 +11,11 @@ from .views import (
 
 router = DefaultRouter()
 
-router.register(r'fields', FieldOfStudyViewSet)
-router.register(r'subjects', SubjectViewSet)
-router.register(r'students', StudentViewSet)
-router.register(r'lecturers', LecturerViewSet)
-router.register(r'schedules', ClassScheduleViewSet)
-router.register(r'grades', GradeViewSet)
+router.register(r'fields', FieldOfStudyViewSet, basename='field')
+router.register(r'subjects', SubjectViewSet, basename='subject')
+router.register(r'students', StudentViewSet, basename='student')
+router.register(r'lecturers', LecturerViewSet, basename='lecturer')
+router.register(r'schedules', ClassScheduleViewSet, basename='schedule')
+router.register(r'grades', GradeViewSet, basename='grade')
 
 urlpatterns = router.urls

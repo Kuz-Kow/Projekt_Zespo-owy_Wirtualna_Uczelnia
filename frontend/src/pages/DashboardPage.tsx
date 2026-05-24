@@ -17,8 +17,12 @@ export function DashboardPage() {
 
   // Dodatkowe linki dla administratora
   const adminLinks = [
-    { path: '/dashboard/users', label: 'Użytkownicy', icon: '👥', color: colors.sky },
-    { path: '/dashboard/subjects', label: 'Przedmioty', icon: '📖', color: colors.teal },
+    { path: '/dashboard/admin/users', label: 'Użytkownicy', icon: '👥', color: colors.sky },
+    { path: '/dashboard/admin/fields', label: 'Kierunki', icon: '🏛️', color: colors.teal },
+    { path: '/dashboard/admin/subjects', label: 'Przedmioty', icon: '📖', color: colors.green },
+    { path: '/dashboard/admin/students', label: 'Studenci', icon: '🎓', color: colors.peach },
+    { path: '/dashboard/admin/lecturers', label: 'Wykładowcy', icon: '👨‍🏫', color: colors.mauve },
+    { path: '/dashboard/admin/schedules', label: 'Plan zajęć', icon: '📅', color: colors.sapphire },
   ];
 
   return (

@@ -138,6 +138,15 @@
   font-size: 1.1rem;
 }
 
+.navSection {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 1rem 0.5rem;
+  margin-top: 0.5rem;
+}
+
 .footer {
   padding: 1rem 0.75rem;
   border-top: 1px solid;

@@ -16,6 +16,15 @@ const menuItems = [
   { path: '/dashboard/grades', label: 'Oceny', icon: '📝' },
 ];
 
+const adminItems = [
+  { path: '/dashboard/admin/users', label: 'Użytkownicy', icon: '👥' },
+  { path: '/dashboard/admin/fields', label: 'Kierunki', icon: '🏛️' },
+  { path: '/dashboard/admin/subjects', label: 'Przedmioty', icon: '📖' },
+  { path: '/dashboard/admin/students', label: 'Studenci', icon: '🎓' },
+  { path: '/dashboard/admin/lecturers', label: 'Wykładowcy', icon: '👨‍🏫' },
+  { path: '/dashboard/admin/schedules', label: 'Plan zajęć', icon: '📅' },
+];
+
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const { colors } = useTheme();
@@ -80,6 +89,28 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span>{item.label}</span>
             </NavLink>
           ))}
+          {user?.role === 'admin' && (
+            <>
+              <div className={styles.navSection} style={{ color: colors.subtext0 }}>Panel administracyjny</div>
+              {adminItems.map(item => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => 
+                    `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
+                  }
+                  style={({ isActive }) => ({
+                    backgroundColor: isActive ? colors.surface0 : 'transparent',
+                    color: isActive ? colors.blue : colors.text,
+                  })}
+                  onClick={onClose}
+                >
+                  <span className={styles.navIcon}>{item.icon}</span>
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+            </>
+          )}
         </nav>
 
         <div className={styles.footer}>

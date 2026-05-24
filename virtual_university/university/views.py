@@ -1,7 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError, PermissionDenied
-from django.db.models import Q
 
 from .models import (
     FieldOfStudy,
@@ -50,8 +49,7 @@ class SubjectViewSet(viewsets.ModelViewSet):
             return Subject.objects.filter(lecturers__user=user)
         if user.role == 'student':
             return Subject.objects.filter(
-                Q(field_of_study__students__user=user) |
-                Q(students__user=user)
+                field_of_study__students__user=user
             ).distinct()
         return Subject.objects.none()
 
@@ -113,8 +111,7 @@ class ClassScheduleViewSet(viewsets.ModelViewSet):
             return ClassSchedule.objects.filter(lecturer__user=user)
         if user.role == 'student':
             return ClassSchedule.objects.filter(
-                Q(subject__field_of_study__students__user=user) |
-                Q(subject__students__user=user)
+                subject__field_of_study__students__user=user
             ).distinct()
         return ClassSchedule.objects.none()
 

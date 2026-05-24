@@ -8,10 +8,23 @@ import { InfoPage } from './pages/InfoPage';
 import { StudiesPage } from './pages/StudiesPage';
 import { SchedulePage } from './pages/SchedulePage';
 import { GradesPage } from './pages/GradesPage';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage';
+import { AdminFieldsPage } from './pages/admin/AdminFieldsPage';
+import { AdminSubjectsPage } from './pages/admin/AdminSubjectsPage';
+import { AdminStudentsPage } from './pages/admin/AdminStudentsPage';
+import { AdminLecturersPage } from './pages/admin/AdminLecturersPage';
+import { AdminSchedulesPage } from './pages/admin/AdminSchedulesPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (user?.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
 }
 
 export default function App() {
@@ -34,6 +47,12 @@ export default function App() {
               <Route path="studies" element={<StudiesPage />} />
               <Route path="schedule" element={<SchedulePage />} />
               <Route path="grades" element={<GradesPage />} />
+              <Route path="admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
+              <Route path="admin/fields" element={<AdminRoute><AdminFieldsPage /></AdminRoute>} />
+              <Route path="admin/subjects" element={<AdminRoute><AdminSubjectsPage /></AdminRoute>} />
+              <Route path="admin/students" element={<AdminRoute><AdminStudentsPage /></AdminRoute>} />
+              <Route path="admin/lecturers" element={<AdminRoute><AdminLecturersPage /></AdminRoute>} />
+              <Route path="admin/schedules" element={<AdminRoute><AdminSchedulesPage /></AdminRoute>} />
             </Route>
           </Routes>
         </BrowserRouter>
