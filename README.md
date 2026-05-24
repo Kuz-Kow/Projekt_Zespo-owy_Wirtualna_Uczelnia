@@ -109,7 +109,6 @@ Projekt_Zespo-owy_Wirtualna_Uczelnia/
 ├── virtual_university/              # Backend (Django REST API)
 │   ├── manage.py
 │   ├── requirements.txt
-│   ├── db.sqlite3                   # Baza SQLite (z danymi demo)
 │   ├── config/                      # Ustawienia Django (settings, urls, wsgi)
 │   ├── users/                       # Aplikacja: użytkownicy i autoryzacja
 │   └── university/                  # Aplikacja: domeny uczelni (kierunki,
@@ -259,6 +258,6 @@ Możesz też skorzystać z przycisków **Zaloguj jako Student / Wykładowca / Ad
 
 - **Backend** i **frontend** muszą być uruchomione **jednocześnie** (dwa osobne terminale).
 - Na razie **nie ma pliku `.env`** — klucz `SECRET_KEY` w `settings.py` to placeholder. Przed wdrożeniem produkcyjnym należy go zmienić.
-- **Baza danych SQLite** (`db.sqlite3`) jest już wypełniona danymi demo. Jeśli chcesz zacząć od zera, usuń ten plik i wykonaj `migrate` + `seed_data`.
+- **Baza danych SQLite** (`db.sqlite3`) nie jest dołączona do repozytorium. Po pierwszym uruchomieniu wykonaj `migrate`, a następnie `seed_data`, aby wypełnić bazę przykładowymi danymi.
 - `CORS_ALLOW_ALL_ORIGINS = True` — tylko na czas rozwoju, **nie wrzucać na produkcję**.
 - W razie problemów z uruchomieniem sprawdź plik `INTEGRATION_GUIDE.md` (szczegółowy przewodnik) lub `QUICK_START.md` (lista kontrolna).

@@ -1,9 +1,7 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError, PermissionDenied
+from django.db.models import Q
 
 from .models import (
     FieldOfStudy,
@@ -26,120 +24,151 @@ from .serializers import (
 from .permissions import (
     IsAdministrator,
     IsLecturer,
-    IsStudent
 )
 
 
-# CRUD dla kierunków - tylko administrator może tworzyć/modyfikować
 class FieldOfStudyViewSet(viewsets.ModelViewSet):
     queryset = FieldOfStudy.objects.all()
     serializer_class = FieldOfStudySerializer
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
-        """Uprawnienia na podstawie akcji"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAdministrator()]
         return [IsAuthenticated()]
 
 
-# CRUD dla przedmiotów
 class SubjectViewSet(viewsets.ModelViewSet):
-    queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Subject.objects.all()
+        if user.role == 'lecturer':
+            return Subject.objects.filter(lecturers__user=user)
+        if user.role == 'student':
+            return Subject.objects.filter(
+                Q(field_of_study__students__user=user) |
+                Q(students__user=user)
+            ).distinct()
+        return Subject.objects.none()
+
     def get_permissions(self):
-        """Uprawnienia na podstawie akcji"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAdministrator()]
         return [IsAuthenticated()]
 
 
-# CRUD dla studentów
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Student.objects.all()
+        if user.role == 'lecturer':
+            return Student.objects.all()
+        if user.role == 'student':
+            return Student.objects.filter(user=user)
+        return Student.objects.none()
+
     def get_permissions(self):
-        """Uprawnienia na podstawie akcji"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAdministrator()]
         return [IsAuthenticated()]
 
 
-# CRUD dla wykładowców
 class LecturerViewSet(viewsets.ModelViewSet):
-    queryset = Lecturer.objects.all()
     serializer_class = LecturerSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Lecturer.objects.all()
+        if user.role == 'lecturer':
+            return Lecturer.objects.filter(user=user)
+        if user.role == 'student':
+            return Lecturer.objects.all()
+        return Lecturer.objects.none()
+
     def get_permissions(self):
-        """Uprawnienia na podstawie akcji"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAdministrator()]
         return [IsAuthenticated()]
 
 
-# Zarządzanie harmonogramem zajęć
 class ClassScheduleViewSet(viewsets.ModelViewSet):
-    queryset = ClassSchedule.objects.all()
     serializer_class = ClassScheduleSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return ClassSchedule.objects.all()
+        if user.role == 'lecturer':
+            return ClassSchedule.objects.filter(lecturer__user=user)
+        if user.role == 'student':
+            return ClassSchedule.objects.filter(
+                Q(subject__field_of_study__students__user=user) |
+                Q(subject__students__user=user)
+            ).distinct()
+        return ClassSchedule.objects.none()
+
     def get_permissions(self):
-        """Uprawnienia na podstawie akcji"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAdministrator()]
         return [IsAuthenticated()]
 
 
-# Zarządzanie ocenami - tylko wykładowcy mogą tworzyć oceny
 class GradeViewSet(viewsets.ModelViewSet):
-    queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Grade.objects.all()
+        if user.role == 'lecturer':
+            return Grade.objects.filter(subject__lecturers__user=user)
+        if user.role == 'student':
+            return Grade.objects.filter(student__user=user)
+        return Grade.objects.none()
+
     def get_permissions(self):
-        """Uprawnienia na podstawie akcji"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsLecturer()]
         return [IsAuthenticated()]
 
-    # Automatyczne przypisanie wykładowcy do oceny
     def perform_create(self, serializer):
-        """
-        Automatyczne przypisanie wykładowcy do oceny.
-        Sprawdza czy użytkownik ma profil wykładowcy.
-        """
         user = self.request.user
-        
-        # Sprawdzenie czy użytkownik jest wykładowcą
         if user.role != 'lecturer':
-            raise ValidationError("Tylko wykładowcy mogą wystawiać oceny")
-        
-        # Próba pobrania profilu wykładowcy
+            raise PermissionDenied("Tylko wykładowcy mogą wystawiać oceny")
         try:
             lecturer = user.lecturer_profile
         except Lecturer.DoesNotExist:
             raise ValidationError("Użytkownik nie ma profilu wykładowcy")
-        
-        # Zapisanie oceny z przypisanym wykładowcą
+        subject = serializer.validated_data.get('subject')
+        if subject and not lecturer.subjects.filter(id=subject.id).exists():
+            raise PermissionDenied(
+                "Nie możesz wystawić oceny z przedmiotu, którego nie prowadzisz"
+            )
         serializer.save(lecturer=lecturer)
 
     def perform_update(self, serializer):
-        """
-        Automatyczne przypisanie wykładowcy przy aktualizacji oceny.
-        """
         user = self.request.user
-        
         if user.role != 'lecturer':
-            raise ValidationError("Tylko wykładowcy mogą modyfikować oceny")
-        
+            raise PermissionDenied("Tylko wykładowcy mogą modyfikować oceny")
         try:
             lecturer = user.lecturer_profile
         except Lecturer.DoesNotExist:
             raise ValidationError("Użytkownik nie ma profilu wykładowcy")
-        
+        grade = self.get_object()
+        if not lecturer.subjects.filter(id=grade.subject.id).exists():
+            raise PermissionDenied(
+                "Nie możesz modyfikować oceny z przedmiotu, którego nie prowadzisz"
+            )
         serializer.save(lecturer=lecturer)
