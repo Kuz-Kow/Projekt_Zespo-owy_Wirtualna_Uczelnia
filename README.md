@@ -52,26 +52,32 @@ Projekt realizowany w ramach projektów zespołowych. Stan surowy — w trakcie 
 
 ### Frontend — strony aplikacji
 
-| Ścieżka                  | Opis                                                   |
-|--------------------------|--------------------------------------------------------|
-| `/`                      | Ekran logowania + przyciski logowania demo             |
-| `/dashboard`             | Panel główny z powitaniem i szybkimi linkami           |
-| `/dashboard/info`        | Dane osobowe użytkownika                               |
-| `/dashboard/studies`     | Lista przedmiotów z ocenami                            |
-| `/dashboard/schedule`    | Plan zajęć na cały tydzień                             |
-| `/dashboard/grades`      | Oceny (student: podgląd, wykładowca: edycja)           |
+| Ścieżka                         | Opis                                                   |
+|---------------------------------|--------------------------------------------------------|
+| `/`                             | Ekran logowania + przyciski logowania demo             |
+| `/dashboard`                    | Panel główny z powitaniem i szybkimi linkami           |
+| `/dashboard/info`               | Dane osobowe użytkownika                               |
+| `/dashboard/studies`            | Lista przedmiotów z ocenami                            |
+| `/dashboard/schedule`           | Plan zajęć na cały tydzień                             |
+| `/dashboard/grades`             | Oceny (student: podgląd, wykładowca: edycja)           |
+| `/dashboard/admin/users`        | [Admin] Zarządzanie użytkownikami                      |
+| `/dashboard/admin/fields`       | [Admin] Zarządzanie kierunkami studiów                 |
+| `/dashboard/admin/subjects`     | [Admin] Zarządzanie przedmiotami                       |
+| `/dashboard/admin/students`     | [Admin] Zarządzanie studentami                         |
+| `/dashboard/admin/lecturers`    | [Admin] Zarządzanie wykładowcami                       |
+| `/dashboard/admin/schedules`    | [Admin] Zarządzanie planem zajęć                       |
 
 ### System uprawnień (role)
 
-- **Admin** — pełny CRUD na wszystkich zasobach
-- **Wykładowca** — może wystawiać i edytować oceny
-- **Student** — dostęp tylko do odczytu
+- **Admin** — pełny CRUD na wszystkich zasobach + panel administracyjny w frontendzie
+- **Wykładowca** — może wystawiać i edytować oceny, widzi tylko swoje przedmioty
+- **Student** — dostęp tylko do odczytu, widzi tylko swoje dane (oceny, plan)
 
 ### Dodatkowo
 
 - Motyw kolorystyczny Catppuccin (jasny `latte` / ciemny `macchiato`) — zapamiętywany w `localStorage`
 - Panel administracyjny Django pod `/admin/`
-- Baza danych SQLite z gotowymi danymi demonstracyjnymi
+- Baza danych SQLite (generowana przez `migrate` + `seed_data`)
 
 ---
 
@@ -81,7 +87,7 @@ Projekt realizowany w ramach projektów zespołowych. Stan surowy — w trakcie 
 - [ ] Edycja profilu użytkownika
 - [ ] Obsługa sesji egzaminacyjnych (zapisy, terminy, wyniki)
 - [ ] System powiadomień (maile, powiadomienia w aplikacji)
-- [ ] Panel administracyjny w frontendzie (zarządzanie użytkownikami, przedmiotami itp.)
+- [x] Panel administracyjny w frontendzie (zarządzanie użytkownikami, przedmiotami itp.)
 - [ ] Testy automatyczne (backend + frontend)
 - [ ] Konfiguracja przez zmienne środowiskowe (`.env`)
 - [ ] Docker / docker-compose do łatwego uruchomienia
