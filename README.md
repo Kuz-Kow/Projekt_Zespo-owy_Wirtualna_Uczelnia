@@ -1,8 +1,8 @@
 # Wirtualna Uczelnia 🎓
 
-Platforma do zarządzania uczelnią wyższą — system webowy typu full-stack umożliwiający obsługę studentów, wykładowców, przedmiotów, planów zajęć i ocen.
+Platforma do zarządzania uczelnią wyższą — system webowy typu full-stack umożliwiający obsługę studentów, wykładowców, przedmiotów, planów zajęć, ocen i materiałów dydaktycznych.
 
-Projekt realizowany w ramach projektów zespołowych. Stan surowy — w trakcie intensywnego rozwoju.
+Projekt realizowany w ramach projektów zespołowych.
 
 ---
 
@@ -37,57 +37,62 @@ Projekt realizowany w ramach projektów zespołowych. Stan surowy — w trakcie 
 
 ### Backend — REST API (wszystkie endpointy są w pełni funkcjonalne)
 
-| Endpoint                  | Opis                                   |
-|---------------------------|----------------------------------------|
-| `POST /api/auth/login`    | Logowanie (email + hasło)              |
-| `POST /api/auth/demo`     | Logowanie demo (student/lecturer/admin)|
-| `GET /api/auth/profile`   | Pobranie profilu zalogowanego użytkownika |
-| `POST /api/auth/logout`   | Wylogowanie (usunięcie tokena)         |
-| `CRUD /api/fields/`       | Zarządzanie kierunkami studiów         |
-| `CRUD /api/subjects/`     | Zarządzanie przedmiotami               |
-| `CRUD /api/students/`     | Zarządzanie studentami                 |
-| `CRUD /api/lecturers/`    | Zarządzanie wykładowcami               |
-| `CRUD /api/schedules/`    | Zarządzanie planem zajęć               |
-| `CRUD /api/grades/`       | Zarządzanie ocenami                    |
+| Endpoint                          | Opis                                                   |
+|-----------------------------------|--------------------------------------------------------|
+| `POST /api/auth/login`            | Logowanie (email lub nazwa użytkownika + hasło)         |
+| `POST /api/auth/demo`             | Logowanie demo (student/lecturer/admin)                |
+| `GET /api/auth/profile`           | Pobranie profilu zalogowanego użytkownika              |
+| `POST /api/auth/logout`           | Wylogowanie (usunięcie tokena)                         |
+| `CRUD /api/auth/users/`           | [Admin] Zarządzanie użytkownikami                      |
+| `CRUD /api/fields/`               | Zarządzanie kierunkami studiów                         |
+| `CRUD /api/subjects/`             | Zarządzanie przedmiotami                               |
+| `CRUD /api/students/`             | Zarządzanie studentami                                 |
+| `GET /api/students/my_students`   | [Wykładowca] Lista studentów zapisanych na jego przedmioty |
+| `CRUD /api/lecturers/`            | Zarządzanie wykładowcami                               |
+| `CRUD /api/schedules/`            | Zarządzanie planem zajęć                               |
+| `CRUD /api/grades/`               | Zarządzanie ocenami                                    |
+| `CRUD /api/materials/`            | Zarządzanie materiałami dydaktycznymi                  |
 
 ### Frontend — strony aplikacji
 
-| Ścieżka                         | Opis                                                   |
-|---------------------------------|--------------------------------------------------------|
-| `/`                             | Ekran logowania + przyciski logowania demo             |
-| `/dashboard`                    | Panel główny z powitaniem i szybkimi linkami           |
-| `/dashboard/info`               | Dane osobowe użytkownika                               |
-| `/dashboard/studies`            | Lista przedmiotów z ocenami                            |
-| `/dashboard/schedule`           | Plan zajęć na cały tydzień                             |
-| `/dashboard/grades`             | Oceny (student: podgląd, wykładowca: edycja)           |
-| `/dashboard/admin/users`        | [Admin] Zarządzanie użytkownikami                      |
-| `/dashboard/admin/fields`       | [Admin] Zarządzanie kierunkami studiów                 |
-| `/dashboard/admin/subjects`     | [Admin] Zarządzanie przedmiotami                       |
-| `/dashboard/admin/students`     | [Admin] Zarządzanie studentami                         |
-| `/dashboard/admin/lecturers`    | [Admin] Zarządzanie wykładowcami                       |
-| `/dashboard/admin/schedules`    | [Admin] Zarządzanie planem zajęć                       |
+| Ścieżka                         | Opis                                                                   |
+|---------------------------------|------------------------------------------------------------------------|
+| `/`                             | Ekran logowania + przyciski logowania demo                             |
+| `/dashboard`                    | Panel główny (admin: panel admina, wykładowca/student: dashboard)      |
+| `/dashboard/info`               | Dane osobowe użytkownika                                               |
+| `/dashboard/studies`            | [Student] Lista przedmiotów z ocenami                                  |
+| `/dashboard/schedule`           | Plan zajęć w formie siatki tygodniowej (07:00–20:30)                   |
+| `/dashboard/grades`             | Student: podgląd ocen; Wykładowca: wystawianie ocen                    |
+| `/dashboard/materials`          | Wykładowca: dodawanie/usuwanie materiałów; Student: podgląd            |
+| `/dashboard/admin/dashboard`    | [Admin] Strona główna panelu z opisem funkcji                          |
+| `/dashboard/admin/users`        | [Admin] Zarządzanie użytkownikami                                      |
+| `/dashboard/admin/fields`       | [Admin] Zarządzanie kierunkami studiów                                 |
+| `/dashboard/admin/subjects`     | [Admin] Zarządzanie przedmiotami                                       |
+| `/dashboard/admin/students`     | [Admin] Zarządzanie studentami                                         |
+| `/dashboard/admin/lecturers`    | [Admin] Zarządzanie wykładowcami                                       |
+| `/dashboard/admin/schedules`    | [Admin] Zarządzanie planem zajęć                                       |
 
 ### System uprawnień (role)
 
-- **Admin** — pełny CRUD na wszystkich zasobach + panel administracyjny w frontendzie
-- **Wykładowca** — może wystawiać i edytować oceny, widzi tylko swoje przedmioty
-- **Student** — dostęp tylko do odczytu, widzi tylko swoje dane (oceny, plan)
+- **Admin** — pełny CRUD na wszystkich zasobach + panel administracyjny w frontendzie. Nie widzi planu zajęć ani ocen w zwykłym widoku.
+- **Wykładowca** — może wystawiać i usuwać oceny, dodawać/usuwać materiały, widzi tylko swoje przedmioty i plan. Menu bez "Studia".
+- **Student** — dostęp tylko do odczytu, widzi tylko swoje dane (oceny, plan, materiały).
 
 ### Dodatkowo
 
-- Motyw kolorystyczny Catppuccin (jasny `latte` / ciemny `macchiato`) — zapamiętywany w `localStorage`
 - Panel administracyjny Django pod `/admin/`
+- Automatyczne tworzenie profili Student/Lecturer przy zakładaniu użytkownika
+- Motyw kolorystyczny Catppuccin (jasny `latte` / ciemny `macchiato`) — zapamiętywany w `localStorage`
 - Baza danych SQLite (generowana przez `migrate` + `seed_data`)
+- Siódemkowy plan zajęć z kolorami przedmiotów i widokiem mobilnym
+- Sidebar dynamicznie dostosowany do roli użytkownika
 
 ---
 
 ## Co planujemy dodać?
 
-- [ ] Połączenie stron frontendu z rzeczywistymi danymi z API (obecnie część danych to mocki)
-- [ ] Edycja profilu użytkownika
 - [ ] Obsługa sesji egzaminacyjnych (zapisy, terminy, wyniki)
 - [ ] System powiadomień (maile, powiadomienia w aplikacji)
-- [x] Panel administracyjny w frontendzie (zarządzanie użytkownikami, przedmiotami itp.)
 - [ ] Testy automatyczne (backend + frontend)
 - [ ] Konfiguracja przez zmienne środowiskowe (`.env`)
 - [ ] Docker / docker-compose do łatwego uruchomienia
@@ -110,7 +115,10 @@ Projekt_Zespo-owy_Wirtualna_Uczelnia/
 │       ├── services/                # apiService.ts — komunikacja z API
 │       ├── components/              # Header, Sidebar, Layout
 │       └── pages/                   # LoginPage, DashboardPage, InfoPage,
-│                                    # StudiesPage, SchedulePage, GradesPage
+│                                    # StudiesPage, SchedulePage, GradesPage,
+│                                    # MaterialsPage, AdminDashboardPage,
+│                                    # admin/ (Users, Fields, Subjects,
+│                                    #   Students, Lecturers, Schedules)
 │
 ├── virtual_university/              # Backend (Django REST API)
 │   ├── manage.py
@@ -118,7 +126,8 @@ Projekt_Zespo-owy_Wirtualna_Uczelnia/
 │   ├── config/                      # Ustawienia Django (settings, urls, wsgi)
 │   ├── users/                       # Aplikacja: użytkownicy i autoryzacja
 │   └── university/                  # Aplikacja: domeny uczelni (kierunki,
-│                                    # przedmioty, studenci, wykładowcy, plan, oceny)
+│                                    # przedmioty, studenci, wykładowcy,
+│                                    # plan, oceny, materiały)
 │
 ├── INTEGRATION_GUIDE.md             # Szczegółowy przewodnik integracji
 ├── QUICK_START.md                   # Szybki start w pigułce
@@ -248,15 +257,13 @@ Frontend będzie dostępny pod adresem `http://localhost:5173`.
 
 Po uruchomieniu `seed_data` dostępne są następujące konta:
 
-| Rola        | Email              | Hasło          |
-|-------------|--------------------|----------------|
-| Student     | student@demo.com   | demo123        |
-| Wykładowca  | lecturer@demo.com  | demo123        |
-| Admin       | admin@demo.com     | demo123        |
+| Rola        | Nazwa użytkownika | Hasło          |
+|-------------|-------------------|----------------|
+| Admin       | admin             | admin123       |
+| Wykładowca  | wykladowca        | lecturer123    |
+| Student     | student           | student123     |
 
-Dodatkowe konta: `admin/admin123`, `wykladowca/lecturer123`, `student/student123`, `student2/student123`.
-
-Możesz też skorzystać z przycisków **Zaloguj jako Student / Wykładowca / Admin** na stronie logowania.
+Możesz też skorzystać z przycisków **Zaloguj jako Student / Wykładowca / Admin** na stronie logowania (konta: student_demo / lecturer_demo / admin_demo, hasło: demo123).
 
 ---
 

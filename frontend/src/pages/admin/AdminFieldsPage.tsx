@@ -7,6 +7,7 @@ interface FieldData {
   id: number;
   name: string;
   faculty: string;
+  num_semesters: number;
 }
 
 export function AdminFieldsPage() {
@@ -14,7 +15,7 @@ export function AdminFieldsPage() {
   const [fields, setFields] = useState<FieldData[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
-  const [form, setForm] = useState<FieldData>({ id: 0, name: '', faculty: '' });
+  const [form, setForm] = useState<FieldData>({ id: 0, name: '', faculty: '', num_semesters: 3 });
   const [editing, setEditing] = useState(false);
 
   const fetch = async () => {
@@ -26,7 +27,7 @@ export function AdminFieldsPage() {
   };
   useEffect(() => { fetch(); }, []);
 
-  const openCreate = () => { setForm({ id: 0, name: '', faculty: '' }); setEditing(false); setModal(true); };
+  const openCreate = () => { setForm({ id: 0, name: '', faculty: '', num_semesters: 3 }); setEditing(false); setModal(true); };
   const openEdit = (f: FieldData) => { setForm(f); setEditing(true); setModal(true); };
 
   const handleSave = async () => {
@@ -54,14 +55,16 @@ export function AdminFieldsPage() {
       </div>
       <div className={styles.table} style={{ borderColor: colors.surface2 }}>
         <div className={styles.tableHeader} style={{ backgroundColor: colors.surface0 }}>
-          <span>Nazwa</span>
-          <span>Wydział</span>
-          <span>Akcje</span>
+          <span style={{ color: colors.subtext1 }}>Nazwa</span>
+          <span style={{ color: colors.subtext1 }}>Wydział</span>
+          <span style={{ color: colors.subtext1 }}>Semestrów</span>
+          <span style={{ color: colors.subtext1 }}>Akcje</span>
         </div>
         {fields.map(f => (
           <div key={f.id} className={styles.tableRow} style={{ borderColor: colors.surface2 }}>
             <span style={{ color: colors.text }}>{f.name}</span>
             <span style={{ color: colors.text }}>{f.faculty}</span>
+            <span style={{ color: colors.text }}>{f.num_semesters}</span>
             <div className={styles.actions}>
               <button className={styles.editBtn} style={{ color: colors.blue }} onClick={() => openEdit(f)}>Edytuj</button>
               <button className={styles.deleteBtn} style={{ color: colors.red }} onClick={() => handleDelete(f.id)}>Usuń</button>
@@ -81,6 +84,10 @@ export function AdminFieldsPage() {
               <div className={styles.field}>
                 <label style={{ color: colors.subtext1 }}>Wydział</label>
                 <input style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2 }} value={form.faculty} onChange={e => setForm({ ...form, faculty: e.target.value })} />
+              </div>
+              <div className={styles.field}>
+                <label style={{ color: colors.subtext1 }}>Liczba semestrów</label>
+                <input type="number" min="1" max="10" style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2 }} value={form.num_semesters} onChange={e => setForm({ ...form, num_semesters: Number(e.target.value) })} />
               </div>
             </div>
             <div className={styles.modalActions}>

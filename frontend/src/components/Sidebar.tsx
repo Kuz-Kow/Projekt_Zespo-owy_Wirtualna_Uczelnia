@@ -8,14 +8,6 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const menuItems = [
-  { path: '/dashboard', label: 'Strona główna', icon: '🏠' },
-  { path: '/dashboard/info', label: 'Informacje osobiste', icon: '👤' },
-  { path: '/dashboard/studies', label: 'Studia', icon: '📚' },
-  { path: '/dashboard/schedule', label: 'Plan zajęć', icon: '📅' },
-  { path: '/dashboard/grades', label: 'Oceny', icon: '📝' },
-];
-
 const adminItems = [
   { path: '/dashboard/admin/users', label: 'Użytkownicy', icon: '👥' },
   { path: '/dashboard/admin/fields', label: 'Kierunki', icon: '🏛️' },
@@ -39,7 +31,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div 
         className={`${styles.overlay} ${isOpen ? styles.overlayVisible : ''}`}
         onClick={onClose}
-        style={{ backgroundColor: colors.crust }}
       />
       <aside 
         className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}
@@ -72,23 +63,49 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         <nav className={styles.nav}>
-          {menuItems.map(item => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => 
-                `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
-              }
-              style={({ isActive }) => ({
-                backgroundColor: isActive ? colors.surface0 : 'transparent',
-                color: isActive ? colors.blue : colors.text,
-              })}
-              onClick={onClose}
-            >
-              <span className={styles.navIcon}>{item.icon}</span>
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
+          {user?.role === 'student' && (
+            <>
+              <NavLink to="/dashboard" end className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>🏠</span><span>Strona główna</span>
+              </NavLink>
+              <NavLink to="/dashboard/info" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>👤</span><span>Informacje osobiste</span>
+              </NavLink>
+              <NavLink to="/dashboard/studies" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📚</span><span>Studia</span>
+              </NavLink>
+              <NavLink to="/dashboard/schedule" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📅</span><span>Plan zajęć</span>
+              </NavLink>
+              <NavLink to="/dashboard/grades" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📝</span><span>Oceny</span>
+              </NavLink>
+              <NavLink to="/dashboard/materials" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📄</span><span>Materiały</span>
+              </NavLink>
+            </>
+          )}
+
+          {user?.role === 'lecturer' && (
+            <>
+              <NavLink to="/dashboard" end className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>🏠</span><span>Strona główna</span>
+              </NavLink>
+              <NavLink to="/dashboard/info" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>👤</span><span>Informacje osobiste</span>
+              </NavLink>
+              <NavLink to="/dashboard/schedule" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📅</span><span>Plan zajęć</span>
+              </NavLink>
+              <NavLink to="/dashboard/grades" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📝</span><span>Wystawianie ocen</span>
+              </NavLink>
+              <NavLink to="/dashboard/materials" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`} style={({ isActive }) => ({ backgroundColor: isActive ? colors.surface0 : 'transparent', color: isActive ? colors.blue : colors.text })} onClick={onClose}>
+                <span className={styles.navIcon}>📄</span><span>Materiały</span>
+              </NavLink>
+            </>
+          )}
+
           {user?.role === 'admin' && (
             <>
               <div className={styles.navSection} style={{ color: colors.subtext0 }}>Panel administracyjny</div>

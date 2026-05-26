@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from .models import User
 from .serializers import UserSerializer, LoginSerializer, DemoLoginSerializer
 from university.permissions import IsAdministrator
+from university.models import Student, Lecturer, FieldOfStudy
 
 
 @api_view(['POST'])
@@ -93,6 +94,18 @@ def demo_login_view(request):
             user.save()
 
         token, _ = Token.objects.get_or_create(user=user)
+
+        if role == 'student':
+            Student.objects.get_or_create(
+                user=user,
+                defaults={
+                    'semester': 1,
+                    'year': 1,
+                    'field_of_study': FieldOfStudy.objects.first(),
+                }
+            )
+        elif role == 'lecturer':
+            Lecturer.objects.get_or_create(user=user)
 
         return Response({
             'token': token.key,

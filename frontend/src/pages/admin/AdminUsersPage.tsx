@@ -65,10 +65,13 @@ export function AdminUsersPage() {
 
   const handleSave = async () => {
     try {
+      const payload: any = { ...form };
+      if (password) payload.password = password;
       if (editing) {
-        await apiService.updateUser(form.id, form);
+        await apiService.updateUser(form.id, payload);
       } else {
-        await apiService.createUser({ ...form, password: password || 'changeme123' });
+        if (!password) { alert('Hasło jest wymagane dla nowego użytkownika'); return; }
+        await apiService.createUser(payload);
       }
       setModal(false);
       fetchUsers();
@@ -100,12 +103,12 @@ export function AdminUsersPage() {
 
       <div className={styles.table} style={{ borderColor: colors.surface2 }}>
         <div className={styles.tableHeader} style={{ backgroundColor: colors.surface0 }}>
-          <span>Nazwa</span>
-          <span>Email</span>
-          <span>Imię</span>
-          <span>Nazwisko</span>
-          <span>Rola</span>
-          <span>Akcje</span>
+          <span style={{ color: colors.subtext1 }}>Nazwa</span>
+          <span style={{ color: colors.subtext1 }}>Email</span>
+          <span style={{ color: colors.subtext1 }}>Imię</span>
+          <span style={{ color: colors.subtext1 }}>Nazwisko</span>
+          <span style={{ color: colors.subtext1 }}>Rola</span>
+          <span style={{ color: colors.subtext1 }}>Akcje</span>
         </div>
         {users.map(u => (
           <div key={u.id} className={styles.tableRow} style={{ borderColor: colors.surface2 }}>
@@ -144,17 +147,15 @@ export function AdminUsersPage() {
                   />
                 </div>
               ))}
-              {!editing && (
-                <div className={styles.field}>
-                  <label style={{ color: colors.subtext1 }}>Hasło</label>
-                  <input
-                    style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2 }}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="Zostaw puste dla domyślnego"
-                  />
-                </div>
-              )}
+              <div className={styles.field}>
+                <label style={{ color: colors.subtext1 }}>Hasło</label>
+                <input
+                  style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2 }}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder={editing ? 'Zostaw puste aby nie zmieniać' : 'Wymagane'}
+                />
+              </div>
               <div className={styles.field}>
                 <label style={{ color: colors.subtext1 }}>Rola</label>
                 <select

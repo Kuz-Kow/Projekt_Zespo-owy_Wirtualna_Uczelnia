@@ -31,6 +31,7 @@ async function apiFetch(url: string, options: RequestInit = {}) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.detail || error.message || `HTTP ${response.status}`);
   }
+  if (response.status === 204) return null;
   return response.json();
 }
 
@@ -90,6 +91,7 @@ export const apiService = {
 
   // Students
   async getStudents() { return apiFetch(`${API_BASE_URL}/students`); },
+  async getMyStudents() { return apiFetch(`${API_BASE_URL}/students/my_students`); },
   async createStudent(data: any) { return apiFetch(`${API_BASE_URL}/students/`, { method: 'POST', body: JSON.stringify(data) }); },
   async updateStudent(id: number, data: any) { return apiFetch(`${API_BASE_URL}/students/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
   async deleteStudent(id: number) { return apiFetch(`${API_BASE_URL}/students/${id}/`, { method: 'DELETE' }); },
@@ -102,12 +104,19 @@ export const apiService = {
 
   // Schedule
   async getSchedule() { return apiFetch(`${API_BASE_URL}/schedules`); },
+  async getAdminSchedule() { return apiFetch(`${API_BASE_URL}/schedules?mode=admin`); },
   async createSchedule(data: any) { return apiFetch(`${API_BASE_URL}/schedules/`, { method: 'POST', body: JSON.stringify(data) }); },
   async updateSchedule(id: number, data: any) { return apiFetch(`${API_BASE_URL}/schedules/${id}/`, { method: 'PUT', body: JSON.stringify(data) }); },
   async deleteSchedule(id: number) { return apiFetch(`${API_BASE_URL}/schedules/${id}/`, { method: 'DELETE' }); },
 
   // Grades
   async getGrades() { return apiFetch(`${API_BASE_URL}/grades`); },
+  async createGrade(data: any) { return apiFetch(`${API_BASE_URL}/grades/`, { method: 'POST', body: JSON.stringify(data) }); },
+  async deleteGrade(id: number) { return apiFetch(`${API_BASE_URL}/grades/${id}/`, { method: 'DELETE' }); },
+
+  // Materials
+  async getMaterials() { return apiFetch(`${API_BASE_URL}/materials`); },
+  async createMaterial(data: any) { return apiFetch(`${API_BASE_URL}/materials/`, { method: 'POST', body: JSON.stringify(data) }); },
 
   // Users (admin only)
   async getUsers() { return apiFetch(`${API_BASE_URL}/auth/users/`); },

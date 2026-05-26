@@ -25,6 +25,8 @@ interface FieldData {
 interface SubjectData {
   id: number;
   name: string;
+  semester: number;
+  field_of_study: number;
 }
 
 export function AdminStudentsPage() {
@@ -47,6 +49,18 @@ export function AdminStudentsPage() {
     finally { setLoading(false); }
   };
   useEffect(() => { fetch(); }, []);
+
+  useEffect(() => {
+    if (form.field_of_study && form.semester && allSubjects.length > 0) {
+      const matching = allSubjects.filter(
+        subj => subj.field_of_study === form.field_of_study && subj.semester === form.semester
+      );
+      setForm((prev: any) => ({
+        ...prev,
+        subjects: matching.map(s => s.id),
+      }));
+    }
+  }, [form.field_of_study, form.semester, allSubjects]);
 
   const openCreate = () => { setForm({ user: 0, semester: 1, year: 1, field_of_study: null, subjects: [] }); setEditing(false); setModal(true); };
   const openEdit = (s: StudentData) => { setForm({ ...s, subjects: s.subjects || [] }); setEditing(true); setModal(true); };
@@ -85,12 +99,12 @@ export function AdminStudentsPage() {
       </div>
       <div className={styles.table} style={{ borderColor: colors.surface2 }}>
         <div className={styles.tableHeader} style={{ backgroundColor: colors.surface0 }}>
-          <span>Email</span>
-          <span>Imię i nazwisko</span>
-          <span>Semestr</span>
-          <span>Rok</span>
-          <span>Kierunek</span>
-          <span>Akcje</span>
+          <span style={{ color: colors.subtext1 }}>Email</span>
+          <span style={{ color: colors.subtext1 }}>Imię i nazwisko</span>
+          <span style={{ color: colors.subtext1 }}>Semestr</span>
+          <span style={{ color: colors.subtext1 }}>Rok</span>
+          <span style={{ color: colors.subtext1 }}>Kierunek</span>
+          <span style={{ color: colors.subtext1 }}>Akcje</span>
         </div>
         {students.map(s => (
           <div key={s.id} className={styles.tableRow} style={{ borderColor: colors.surface2 }}>

@@ -7,112 +7,130 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   border-radius: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  gap: 1.5rem;
 }
 
-.welcomeText h1 {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
-}
-
-.welcomeText p {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.welcomeIcon {
-  width: 60px;
-  height: 60px;
-  border-radius: 1rem;
+.statsRow {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
+  gap: 0.75rem;
 }
 
-.quickLinks {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.quickLink {
+.stat {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  border-radius: 1rem;
-  text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.quickLink:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.quickLinkIcon {
-  width: 44px;
-  height: 44px;
+  padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
+  min-width: 80px;
 }
 
-.quickLink span {
-  font-weight: 500;
-}
-
-.cards {
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
 .card {
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 1rem;
 }
 
-.card h3 {
-  margin: 0 0 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.nextLesson {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.nextLesson span:first-child {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.lastGrades {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.gradeItem {
+.lessonRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid;
 }
 
-.gradeItem span:first-child {
-  font-size: 0.95rem;
+.lessonRow:last-child {
+  border-bottom: none;
 }
 
-.gradeItem span:last-child {
-  font-weight: 700;
-  font-size: 1.1rem;
+.lessonRow div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.time {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.subjectName {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.room {
+  font-size: 0.8rem;
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.dayCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.dayLabel {
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.dayLesson {
+  font-size: 0.7rem;
+  text-align: center;
+  line-height: 1.2;
+  opacity: 0.85;
+}
+
+.gradeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gradeChip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .welcome {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weekGrid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.25rem;
+  }
+
+  .statsRow {
+    gap: 0.5rem;
+  }
+
+  .stat {
+    min-width: 60px;
+    padding: 0.5rem;
+  }
 }

@@ -1,0 +1,59 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  border-radius: 1rem;
+}
+
+.materialsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.subjectGroup {
+  padding: 1.25rem;
+  border-radius: 1rem;
+}
+
+.subjectTitle {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.materialCards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.materialCard {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.materialIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.materialInfo {
+  flex: 1;
+}
+
+.materialMeta {
+  margin-top: 0.25rem;
+}

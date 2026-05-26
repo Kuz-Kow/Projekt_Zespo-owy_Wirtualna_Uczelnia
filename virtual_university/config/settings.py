@@ -1,11 +1,14 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key-change-in-production'
+load_dotenv(BASE_DIR / '.env')
 
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-dev-key')
+
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = ['*']
 

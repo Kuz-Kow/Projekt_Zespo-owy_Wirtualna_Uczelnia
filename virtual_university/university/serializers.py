@@ -6,7 +6,8 @@ from .models import (
     Student,
     Lecturer,
     ClassSchedule,
-    Grade
+    Grade,
+    CourseMaterial
 )
 
 
@@ -14,16 +15,21 @@ class FieldOfStudySerializer(serializers.ModelSerializer):
     """Serializator dla kierunków studiów"""
     class Meta:
         model = FieldOfStudy
-        fields = ['id', 'name', 'faculty']
+        fields = ['id', 'name', 'faculty', 'num_semesters']
 
 
 class SubjectSerializer(serializers.ModelSerializer):
     """Serializator dla przedmiotów"""
     field_of_study_name = serializers.CharField(source='field_of_study.name', read_only=True)
+    lecturers = serializers.PrimaryKeyRelatedField(many=True, queryset=Lecturer.objects.all(), required=False)
+    lecturers_names = serializers.SerializerMethodField()
     
     class Meta:
         model = Subject
-        fields = ['id', 'name', 'hours', 'semester', 'field_of_study', 'field_of_study_name']
+        fields = ['id', 'name', 'hours', 'semester', 'field_of_study', 'field_of_study_name', 'lecturers', 'lecturers_names']
+    
+    def get_lecturers_names(self, obj):
+        return [str(l) for l in obj.lecturers.all()]
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -79,6 +85,15 @@ class ClassScheduleSerializer(serializers.ModelSerializer):
         ]
 
 
+class CourseMaterialSerializer(serializers.ModelSerializer):
+    subject_name = serializers.CharField(source='subject.name', read_only=True)
+    uploaded_by_name = serializers.CharField(source='uploaded_by.user.get_full_name', read_only=True)
+
+    class Meta:
+        model = CourseMaterial
+        fields = ['id', 'title', 'description', 'subject', 'subject_name', 'uploaded_by', 'uploaded_by_name', 'created_at']
+
+
 class GradeSerializer(serializers.ModelSerializer):
     """Serializator dla ocen"""
     student_name = serializers.CharField(source='student.user.get_full_name', read_only=True)
@@ -91,3 +106,4 @@ class GradeSerializer(serializers.ModelSerializer):
             'id', 'student', 'student_name', 'subject', 'subject_name',
             'lecturer', 'lecturer_name', 'value', 'date_assigned'
         ]
+        read_only_fields = ['lecturer']

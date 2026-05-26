@@ -18,6 +18,9 @@ interface ScheduleData {
 interface SubjectData {
   id: number;
   name: string;
+  semester: number;
+  field_of_study: number;
+  field_of_study_name: string;
 }
 
 interface LecturerData {
@@ -25,6 +28,12 @@ interface LecturerData {
   user_email: string;
   user_first_name: string;
   user_last_name: string;
+}
+
+interface FieldData {
+  id: number;
+  name: string;
+  num_semesters: number;
 }
 
 const DAYS = [
@@ -41,27 +50,70 @@ export function AdminSchedulesPage() {
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
   const [subjects, setSubjects] = useState<SubjectData[]>([]);
   const [lecturers, setLecturers] = useState<LecturerData[]>([]);
+  const [fields, setFields] = useState<FieldData[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState<any>({ subject: 0, lecturer: 0, day_of_week: 'MON', start_time: '08:00', end_time: '09:30', room: '' });
   const [editing, setEditing] = useState(false);
 
+  const [selectedField, setSelectedField] = useState<number | null>(null);
+  const [selectedSemester, setSelectedSemester] = useState<number>(1);
+  const [semesters, setSemesters] = useState<number[]>([]);
+
   const fetch = async () => {
     try {
-      const [sched, subj, lect] = await Promise.all([apiService.getSchedule(), apiService.getSubjects(), apiService.getLecturers()]);
+      const [sched, subj, lect, flds] = await Promise.all([
+        apiService.getAdminSchedule(),
+        apiService.getSubjects(),
+        apiService.getLecturers(),
+        apiService.getFields(),
+      ]);
       setSchedules(sched);
       setSubjects(subj);
       setLecturers(lect);
+      setFields(flds);
+      if (flds.length > 0 && !selectedField) {
+        setSelectedField(flds[0].id);
+        setSemesters(Array.from({ length: flds[0].num_semesters }, (_, i) => i + 1));
+      }
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };
   useEffect(() => { fetch(); }, []);
 
+  useEffect(() => {
+    if (selectedField) {
+      const field = fields.find(f => f.id === selectedField);
+      setSemesters(field ? Array.from({ length: field.num_semesters }, (_, i) => i + 1) : []);
+      if (selectedSemester > (field?.num_semesters || 1)) {
+        setSelectedSemester(1);
+      }
+    }
+  }, [selectedField, fields]);
+
+  const filteredSubjects = subjects.filter(s =>
+    s.field_of_study === selectedField && s.semester === selectedSemester
+  );
+
+  const filteredSchedules = schedules.filter(s => {
+    const subj = subjects.find(sub => sub.id === s.subject);
+    return subj && subj.field_of_study === selectedField && subj.semester === selectedSemester;
+  });
+
   const openCreate = () => {
-    setForm({ subject: subjects[0]?.id || 0, lecturer: lecturers[0]?.id || 0, day_of_week: 'MON', start_time: '08:00', end_time: '09:30', room: '' });
+    const firstSubj = filteredSubjects[0];
+    setForm({
+      subject: firstSubj?.id || 0,
+      lecturer: lecturers[0]?.id || 0,
+      day_of_week: 'MON',
+      start_time: '08:00',
+      end_time: '09:30',
+      room: ''
+    });
     setEditing(false);
     setModal(true);
   };
+
   const openEdit = (s: ScheduleData) => {
     setForm({ ...s, subject: s.subject, lecturer: s.lecturer });
     setEditing(true);
@@ -91,31 +143,64 @@ export function AdminSchedulesPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 style={{ color: colors.text }}>Plan zajęć</h1>
-        <button className={styles.addBtn} style={{ backgroundColor: colors.blue }} onClick={openCreate}>+ Nowe zajęcia</button>
+        <button className={styles.addBtn} style={{ backgroundColor: colors.blue }} onClick={openCreate} disabled={filteredSubjects.length === 0}>+ Nowe zajęcia</button>
       </div>
+
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className={styles.field} style={{ minWidth: 200 }}>
+          <label style={{ color: colors.subtext1, display: 'block', marginBottom: 4, fontSize: '0.85rem' }}>Kierunek</label>
+          <select
+            style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2, padding: '8px 12px', borderRadius: 8, border: '1px solid', width: '100%' }}
+            value={selectedField ?? ''}
+            onChange={e => setSelectedField(Number(e.target.value))}
+          >
+            {fields.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+          </select>
+        </div>
+        <div className={styles.field} style={{ minWidth: 120 }}>
+          <label style={{ color: colors.subtext1, display: 'block', marginBottom: 4, fontSize: '0.85rem' }}>Semestr</label>
+          <select
+            style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2, padding: '8px 12px', borderRadius: 8, border: '1px solid', width: '100%' }}
+            value={selectedSemester}
+            onChange={e => setSelectedSemester(Number(e.target.value))}
+          >
+            {semesters.map(s => <option key={s} value={s}>Semestr {s}</option>)}
+          </select>
+        </div>
+      </div>
+
       <div className={styles.table} style={{ borderColor: colors.surface2 }}>
         <div className={styles.tableHeader} style={{ backgroundColor: colors.surface0 }}>
-          <span>Przedmiot</span>
-          <span>Wykładowca</span>
-          <span>Dzień</span>
-          <span>Godzina</span>
-          <span>Sala</span>
-          <span>Akcje</span>
+          <span style={{ color: colors.subtext1 }}>Przedmiot</span>
+          <span style={{ color: colors.subtext1 }}>Wykładowca</span>
+          <span style={{ color: colors.subtext1 }}>Dzień</span>
+          <span style={{ color: colors.subtext1 }}>Godzina</span>
+          <span style={{ color: colors.subtext1 }}>Sala</span>
+          <span style={{ color: colors.subtext1 }}>Akcje</span>
         </div>
-        {schedules.map(s => (
-          <div key={s.id} className={styles.tableRow} style={{ borderColor: colors.surface2 }}>
-            <span style={{ color: colors.text }}>{s.subject_name}</span>
-            <span style={{ color: colors.text }}>{s.lecturer_name}</span>
-            <span style={{ color: colors.text }}>{dayLabel(s.day_of_week)}</span>
-            <span style={{ color: colors.text }}>{s.start_time} - {s.end_time}</span>
-            <span style={{ color: colors.subtext1 }}>{s.room}</span>
-            <div className={styles.actions}>
-              <button className={styles.editBtn} style={{ color: colors.blue }} onClick={() => openEdit(s)}>Edytuj</button>
-              <button className={styles.deleteBtn} style={{ color: colors.red }} onClick={() => handleDelete(s.id)}>Usuń</button>
-            </div>
+        {filteredSchedules.length === 0 ? (
+          <div className={styles.tableRow} style={{ borderColor: colors.surface2 }}>
+            <span style={{ color: colors.subtext0, gridColumn: '1 / -1', textAlign: 'center', padding: '1rem' }}>
+              Brak zajęć dla tego kierunku i semestru
+            </span>
           </div>
-        ))}
+        ) : (
+          filteredSchedules.map(s => (
+            <div key={s.id} className={styles.tableRow} style={{ borderColor: colors.surface2 }}>
+              <span style={{ color: colors.text }}>{s.subject_name}</span>
+              <span style={{ color: colors.text }}>{s.lecturer_name}</span>
+              <span style={{ color: colors.text }}>{dayLabel(s.day_of_week)}</span>
+              <span style={{ color: colors.text }}>{s.start_time} - {s.end_time}</span>
+              <span style={{ color: colors.text }}>{s.room}</span>
+              <div className={styles.actions}>
+                <button className={styles.editBtn} style={{ color: colors.blue }} onClick={() => openEdit(s)}>Edytuj</button>
+                <button className={styles.deleteBtn} style={{ color: colors.red }} onClick={() => handleDelete(s.id)}>Usuń</button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
+
       {modal && (
         <div className={styles.modal} onClick={() => setModal(false)}>
           <div className={styles.modalContent} style={{ backgroundColor: colors.mantle }} onClick={e => e.stopPropagation()}>
@@ -124,7 +209,7 @@ export function AdminSchedulesPage() {
               <div className={styles.field}>
                 <label style={{ color: colors.subtext1 }}>Przedmiot</label>
                 <select style={{ backgroundColor: colors.surface0, color: colors.text, borderColor: colors.surface2 }} value={form.subject} onChange={e => setForm({ ...form, subject: Number(e.target.value) })}>
-                  {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {filteredSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
               <div className={styles.field}>

@@ -6,7 +6,8 @@ from .views import (
     StudentViewSet,
     LecturerViewSet,
     ClassScheduleViewSet,
-    GradeViewSet
+    GradeViewSet,
+    CourseMaterialViewSet
 )
 
 router = DefaultRouter()
@@ -17,5 +18,6 @@ router.register(r'students', StudentViewSet, basename='student')
 router.register(r'lecturers', LecturerViewSet, basename='lecturer')
 router.register(r'schedules', ClassScheduleViewSet, basename='schedule')
 router.register(r'grades', GradeViewSet, basename='grade')
+router.register(r'materials', CourseMaterialViewSet, basename='material')
 
 urlpatterns = router.urls

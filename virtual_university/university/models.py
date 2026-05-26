@@ -8,6 +8,7 @@ class FieldOfStudy(models.Model):
 
     name = models.CharField(max_length=255)
     faculty = models.CharField(max_length=255)
+    num_semesters = models.IntegerField(default=3)
 
     def __str__(self):
         return self.name
@@ -139,3 +140,28 @@ class Grade(models.Model):
 
     def __str__(self):
         return f"{self.student} - {self.subject} - {self.value}"
+
+
+# Materiały dydaktyczne
+class CourseMaterial(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name='materials'
+    )
+    uploaded_by = models.ForeignKey(
+        Lecturer,
+        on_delete=models.CASCADE,
+        related_name='materials',
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-created_at']

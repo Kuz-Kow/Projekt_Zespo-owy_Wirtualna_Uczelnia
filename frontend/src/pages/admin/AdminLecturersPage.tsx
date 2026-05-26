@@ -75,11 +75,11 @@ export function AdminLecturersPage() {
       </div>
       <div className={styles.table} style={{ borderColor: colors.surface2 }}>
         <div className={styles.tableHeader} style={{ backgroundColor: colors.surface0 }}>
-          <span>Email</span>
-          <span>Imię i nazwisko</span>
-          <span>Tytuł</span>
-          <span>Przedmioty</span>
-          <span>Akcje</span>
+          <span style={{ color: colors.subtext1 }}>Email</span>
+          <span style={{ color: colors.subtext1 }}>Imię i nazwisko</span>
+          <span style={{ color: colors.subtext1 }}>Tytuł</span>
+          <span style={{ color: colors.subtext1 }}>Przedmioty</span>
+          <span style={{ color: colors.subtext1 }}>Akcje</span>
         </div>
         {lecturers.map(l => (
           <div key={l.id} className={styles.tableRow} style={{ borderColor: colors.surface2 }}>
