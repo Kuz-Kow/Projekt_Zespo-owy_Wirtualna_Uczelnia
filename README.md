@@ -18,7 +18,6 @@ Projekt realizowany w ramach projektów zespołowych.
   - [Frontend (React + Vite)](#frontend-react--vite)
   - [Dostep do aplikacji](#dostep-do-aplikacji)
 - [Konta demonstracyjne](#konta-demonstracyjne)
-- [Uwagi dla deweloperów](#uwagi-dla-deweloperów)
 
 ---
 
@@ -107,30 +106,41 @@ Projekt realizowany w ramach projektów zespołowych.
 Projekt_Zespo-owy_Wirtualna_Uczelnia/
 ├── frontend/                        # Aplikacja frontendowa (React + Vite)
 │   ├── package.json
+│   ├── package-lock.json
 │   ├── vite.config.ts
+│   ├── tsconfig.json / tsconfig.app.json / tsconfig.node.json
+│   ├── eslint.config.js
 │   ├── index.html
-│   └── src/
-│       ├── App.tsx                  # Routing
-│       ├── context/                 # AuthContext, ThemeContext
-│       ├── services/                # apiService.ts — komunikacja z API
-│       ├── components/              # Header, Sidebar, Layout
-│       └── pages/                   # LoginPage, DashboardPage, InfoPage,
-│                                    # StudiesPage, SchedulePage, GradesPage,
-│                                    # MaterialsPage, AdminDashboardPage,
-│                                    # admin/ (Users, Fields, Subjects,
-│                                    #   Students, Lecturers, Schedules)
+│   ├── public/
+│   │   ├── favicon.svg
+│   │   └── icons.svg
+│   ├── src/
+│   │   ├── main.tsx                 # Entry point
+│   │   ├── App.tsx                  # Routing
+│   │   ├── index.css                # Style globalne
+│   │   ├── assets/                  # Obrazy (hero.png, svg)
+│   │   ├── context/                 # AuthContext, ThemeContext
+│   │   ├── services/                # apiService.ts — komunikacja z API
+│   │   ├── components/              # Header, Sidebar, Layout
+│   │   └── pages/                   # LoginPage, DashboardPage, InfoPage,
+│   │                                # StudiesPage, SchedulePage, GradesPage,
+│   │                                # MaterialsPage, AdminDashboardPage,
+│   │                                # admin/ (Users, Fields, Subjects,
+│   │                                #   Students, Lecturers, Schedules)
+│   └── .gitignore
 │
 ├── virtual_university/              # Backend (Django REST API)
 │   ├── manage.py
 │   ├── requirements.txt
+│   ├── .env / .env.example          # Zmienne środowiskowe
 │   ├── config/                      # Ustawienia Django (settings, urls, wsgi)
 │   ├── users/                       # Aplikacja: użytkownicy i autoryzacja
+│   │   └── management/commands/     # seed_data.py — dane demonstracyjne
 │   └── university/                  # Aplikacja: domeny uczelni (kierunki,
 │                                    # przedmioty, studenci, wykładowcy,
 │                                    # plan, oceny, materiały)
 │
-├── INTEGRATION_GUIDE.md             # Szczegółowy przewodnik integracji
-├── QUICK_START.md                   # Szybki start w pigułce
+├── .gitignore
 └── README.md                        # Ten plik
 ```
 
@@ -143,7 +153,7 @@ Projekt_Zespo-owy_Wirtualna_Uczelnia/
 - **Python** 3.10+ (zalecane 3.14)
 - **Node.js** 18+ (zalecane najnowsze LTS)
 - **npm** (do zarządzania paczkami frontendu)
-- **Git** (do klonowania repozytorium)
+- **unzip** (do rozpakowania archiwum)
 
 ---
 
@@ -151,10 +161,12 @@ Projekt_Zespo-owy_Wirtualna_Uczelnia/
 
 Instrukcja dla **Linux (w tym Arch), macOS i Windows**.
 
-#### 1. Sklonuj repozytorium
+#### 1. Pobierz i rozpakuj archiwum
+
+Pobierz plik `Projekt_zespolowy_Lab3_zesp2_2026.zip` i rozpakuj go:
 
 ```bash
-git clone <adres-repozytorium>
+unzip Projekt_zespolowy_Lab3_zesp2_2026.zip
 cd Projekt_Zespo-owy_Wirtualna_Uczelnia
 ```
 
@@ -265,12 +277,3 @@ Po uruchomieniu `seed_data` dostępne są następujące konta:
 
 Możesz też skorzystać z przycisków **Zaloguj jako Student / Wykładowca / Admin** na stronie logowania (konta: student_demo / lecturer_demo / admin_demo, hasło: demo123).
 
----
-
-## Uwagi dla deweloperów
-
-- **Backend** i **frontend** muszą być uruchomione **jednocześnie** (dwa osobne terminale).
-- Na razie **nie ma pliku `.env`** — klucz `SECRET_KEY` w `settings.py` to placeholder. Przed wdrożeniem produkcyjnym należy go zmienić.
-- **Baza danych SQLite** (`db.sqlite3`) nie jest dołączona do repozytorium. Po pierwszym uruchomieniu wykonaj `migrate`, a następnie `seed_data`, aby wypełnić bazę przykładowymi danymi.
-- `CORS_ALLOW_ALL_ORIGINS = True` — tylko na czas rozwoju, **nie wrzucać na produkcję**.
-- W razie problemów z uruchomieniem sprawdź plik `INTEGRATION_GUIDE.md` (szczegółowy przewodnik) lub `QUICK_START.md` (lista kontrolna).
