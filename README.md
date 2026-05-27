@@ -88,18 +88,6 @@ Projekt realizowany w ramach projektów zespołowych.
 
 ---
 
-## Co planujemy dodać?
-
-- [ ] Obsługa sesji egzaminacyjnych (zapisy, terminy, wyniki)
-- [ ] System powiadomień (maile, powiadomienia w aplikacji)
-- [ ] Testy automatyczne (backend + frontend)
-- [ ] Konfiguracja przez zmienne środowiskowe (`.env`)
-- [ ] Docker / docker-compose do łatwego uruchomienia
-- [ ] Konfiguracja produkcyjna (DEBUG=False, bezpieczny SECRET_KEY, CORS na konkretne domeny)
-- [ ] Dokumentacja API (Swagger/OpenAPI)
-
----
-
 ## Struktura projektu
 
 ```
@@ -159,7 +147,7 @@ Projekt_Zespo-owy_Wirtualna_Uczelnia/
 
 ### Backend (Django REST API)
 
-Instrukcja dla **Linux (w tym Arch), macOS i Windows**.
+Instrukcja dla **Linux, macOS i Windows**.
 
 #### 1. Pobierz i rozpakuj archiwum
 
@@ -276,4 +264,3 @@ Po uruchomieniu `seed_data` dostępne są następujące konta:
 | Student     | student           | student123     |
 
 Możesz też skorzystać z przycisków **Zaloguj jako Student / Wykładowca / Admin** na stronie logowania (konta: student_demo / lecturer_demo / admin_demo, hasło: demo123).
-
